@@ -1,0 +1,36 @@
+#完整程式碼
+
+#讀檔
+path1 = r"C:\Users\leo\Global_Orders_2011_Broken.xlsx"
+path2 = r"C:\Users\leo\Global_Orders_2012_Broken.xlsx"
+path3 = r"C:\Users\leo\Global_Orders_2013_Broken.xlsx"
+
+df1 = pd.read_excel(path1, sheet_name=None)
+df2 = pd.read_excel(path2, sheet_name=None)
+df3 = pd.read_excel(path3, sheet_name=None)
+
+#將City,State切成2個column,並刪除原本City,State整個column
+df1.drop(df1.columns[23:71],axis=1,inplace=True)
+df1['City']=df1['City, State'].str.split(',',expand=True)[0]
+df1['State']=df1['City, State'].str.split(',',expand=True)[1]
+df1.drop(['City, State'],axis=1,inplace=True)
+
+#更改data value 1.Afric -> Africa 2. Caribean -> Caribbean
+#更改Sub_Category　to Sub-Category
+#更改00 -> 0
+#更改NA值　->　Missing Value
+
+df1['Region'].replace(['Afric'],['Africa'],inplace=True)
+df1['Region'].replace(['Caribean'],['Caribbean'],inplace=True)
+
+df2.rename(columns={'Sub_Category':'Sub-Category'})
+df2['Discount']
+df2.loc[df2['Discount'] == 'OO%'] = 0
+
+df3['Order ID'].fillna('Missing Value',inplace=True)
+
+#Union
+Adf = pd.concat([df1,df2,df3])
+
+#Save to excel file
+Adf.to_excel(r'C:\Users\leo\Desktop\TableauPrep_workshop_20180607\excel_output.xls')
